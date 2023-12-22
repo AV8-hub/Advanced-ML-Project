@@ -8,13 +8,17 @@ from torchvision.transforms import v2
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 
-def filterDataset(folder, classes, annpath, mode):    
+
+def filterDataset(folder, classes, annpath, mode, ):    
     # initialize COCO api for instance annotations
     annFile = annpath.format(folder, mode)
     coco = COCO(annFile)
-    
-    imgIds = coco.getImgIds()
-    images = coco.loadImgs(imgIds)
+    images = []
+    for className in classes:
+        # get all images containing given categories
+        catIds = coco.getCatIds(catNms=className)
+        imgIds = coco.getImgIds(catIds=catIds)
+        images += coco.loadImgs(imgIds)
     
     # Now, filter out the repeated images
     unique_images = []
@@ -24,9 +28,8 @@ def filterDataset(folder, classes, annpath, mode):
             unique_images.append(images[i])
             
     random.shuffle(unique_images)
-    dataset_size = len(unique_images)
     
-    return unique_images, dataset_size, coco
+    return unique_images, coco
 
 def getClassName(classID, cats):
     for i in range(len(cats)):
@@ -45,7 +48,7 @@ def getImage(imageObj, img_folder, input_image_size):
         stacked_img = np.stack((train_img,)*3, axis=-1)
         return stacked_img
     
-def get_mask(imageObj, classes, coco, catIds, input_image_size):
+def getMask(imageObj, classes, coco, catIds, input_image_size):
     annIds = coco.getAnnIds(imageObj['id'], catIds=catIds, iscrowd=None)
     anns = coco.loadAnns(annIds)
     cats = coco.loadCats(catIds)
@@ -61,7 +64,7 @@ def get_mask(imageObj, classes, coco, catIds, input_image_size):
     return train_mask  
 
 
-def get_tensors(images, classes, coco, folder, mode, input_image_size):
+def getTensors(images, classes, coco, folder, mode, input_image_size):
     
     img_folder = '{}/images/{}'.format(folder, mode)
     dataset_size = len(images)
@@ -74,10 +77,12 @@ def get_tensors(images, classes, coco, folder, mode, input_image_size):
             
         ### Retrieve Image ###
         img = getImage(imageObj, img_folder, input_image_size)
+        img = np.resize(img, (3, input_image_size[0], input_image_size[1]))
         X.append(img)
 
         ### Create Mask ###
         mask = getMask(imageObj, classes, coco, catIds, input_image_size)
+        mask = np.resize(mask, (1, input_image_size[0], input_image_size[1]))
         y.append(mask)
         
     X = torch.Tensor(X)
@@ -85,7 +90,7 @@ def get_tensors(images, classes, coco, folder, mode, input_image_size):
     
     return X, y
 
-def augment_data(X, y, p = 0.5):
+def AugmentData(X, y, p = 0.5):
 
     n = len(X)
     for i in range(n):
@@ -106,11 +111,6 @@ def augment_data(X, y, p = 0.5):
                 mask = TF.vflip(mask)
             
             if random.random() < p:
-                i, j, h, w = v2.RandomResizedCrop(size=(224, 224)).get_params(image, scale=[0.08, 1.0], ratio = [0.75, 1.3333333333333333])
-                image = TF.crop(image, i, j, h, w)
-                mask = TF.crop(mask, i, j, h, w)
-            
-            if random.random() < p:
                 image = v2.ColorJitter(brightness=random.random())(image)
 
             if random.random() < p:
@@ -118,18 +118,19 @@ def augment_data(X, y, p = 0.5):
                 image = image + noise
                 image = v2.ColorJitter(brightness=random.random())(image)
             
-            X = torch.cat((X,image),0)
-            y = torch.cat((y,mask),0)
+            X = torch.cat((X,image.unsqueeze(0)),0)
+            y = torch.cat((y,mask.unsqueeze(0)),0)
 
     return X, y
 
-def get_dataloader(folder = './COCOdataset2017', classes=['sports ball'], annpath = '{}/annotations/instances_{}2017.json', mode, input_image_size=(224,224), batch_size = 64):
+def getDataloader(mode, folder = './COCOdataset2017', classes=['sports ball'], annpath = '{}/annotations/instances_{}2017.json', input_image_size=(224,224), batch_size = 64):
 
-    images, dataset_size, coco = filterDataset(folder, classes, annpath, mode)
-    X, y = get_tensors(images, classes, coco, folder, mode, input_image_size)
-    X, y = augment_data(X, y)
+    images, coco = filterDataset(folder, classes, annpath, mode)
+    X, y = getTensors(images, classes, coco, folder, mode, input_image_size)
+    if mode == 'train':
+        X, y = AugmentData(X, y)
 
     dataset = TensorDataset(X, y)
-    dataloader = DataLoader(dataset, batch_size = batch_size)
+    dataloader = DataLoader(dataset, batch_size = batch_size, num_workers=8)
     return dataloader
 
