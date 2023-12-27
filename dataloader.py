@@ -107,10 +107,6 @@ def AugmentData(X, y, p = 0.5):
                 mask = TF.vflip(mask)
             
             if random.random() < p:
-                image = TF.vflip(image)
-                mask = TF.vflip(mask)
-            
-            if random.random() < p:
                 image = v2.ColorJitter(brightness=random.random())(image)
 
             if random.random() < p:
