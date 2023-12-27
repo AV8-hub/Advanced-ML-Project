@@ -21,7 +21,7 @@ def IOU(outputs, labels):
 
 def evaluate(model, validation_loader):
     running_vloss = 0.0
-    acc = 0
+    acc = 0.0
     batch_size = validation_loader.batch_size
     loss_fn = nn.CrossEntropyLoss()
     model.eval()
