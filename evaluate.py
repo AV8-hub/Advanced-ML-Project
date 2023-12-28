@@ -7,11 +7,31 @@ import argparse
 import pandas as pd
 
 def accuracy(outputs, labels):
+    """
+    Calculate accuracy between predicted outputs and ground truth labels.
+
+    Args:
+    - outputs (torch.Tensor): Predicted outputs from the model.
+    - labels (torch.Tensor): Ground truth labels.
+
+    Returns:
+    - float: Accuracy value.
+    """
     correct = torch.sum(torch.eq(outputs, labels).long())
     accuracy = correct / np.prod(np.array(outputs.shape))
     return float(accuracy)
 
 def IOU(outputs, labels):
+    """
+    Calculate Intersection over Union (IoU) between predicted outputs and ground truth labels.
+
+    Args:
+    - outputs (torch.Tensor): Predicted outputs from the model.
+    - labels (torch.Tensor): Ground truth labels.
+
+    Returns:
+    - float: IoU value.
+    """
     intersection = (outputs * labels).sum()
     union = (outputs + labels - (outputs * labels)).sum()
 
@@ -19,7 +39,18 @@ def IOU(outputs, labels):
 
     return float(iou.mean())
 
+
 def evaluate(model, validation_loader):
+    """
+    Evaluate the model on the validation set.
+
+    Args:
+    - model (nn.Module): The PyTorch model to be evaluated.
+    - validation_loader (DataLoader): DataLoader for validation data.
+
+    Returns:
+    - dict: Dictionary containing evaluation metrics (Average Loss, Average Accuracy, Average IoU).
+    """
     running_vloss = 0.0
     acc = 0.0
     batch_size = validation_loader.batch_size
@@ -45,7 +76,12 @@ def evaluate(model, validation_loader):
 
 
 def parse_args():
-    """parse command line arguments"""
+    """
+    Parse command line arguments for model evaluation.
+
+    Returns:
+    - argparse.Namespace: Parsed arguments.
+    """
     parser = argparse.ArgumentParser(description='Evaluate sports ball image segmentation model')
     parser.add_argument(
         '--model', type=function, default=models.UNetMobileNetV2fixed,
