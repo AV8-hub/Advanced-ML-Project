@@ -5,14 +5,36 @@ import numpy as np
 import pandas as pd
 from utils import up, down
 
-
 class UNetMobileNetV2fixed(nn.Module):
-    def __init__(self, num_classes = 1):
+    """
+    U-Net architecture with a fixed MobileNetV2 encoder for image segmentation.
+
+    Args:
+    - num_classes (int): Number of output channels/classes for segmentation. Default is 1.
+
+    Attributes:
+    - encoder (nn.Module): MobileNetV2 pretrained feature extractor.
+    - encoder_layers (list): List of encoder layers for skip connections.
+    - classifier (nn.Sequential): Classifier module for the decoder.
+    - upsample (nn.Upsample): Upsampling layer.
+
+    Methods:
+    - forward(x): Forward pass through the network.
+
+    Example:
+    ```python
+    model = UNetMobileNetV2fixed(num_classes=3)
+    output = model(input_tensor)
+    ```
+
+    Note:
+    The classifier part and the steps for extracting skip connections can be customized.
+    """
+    def __init__(self, num_classes=1):
         super(UNetMobileNetV2fixed, self).__init__()
 
-    
         self.encoder = models.mobilenet_v2(pretrained=True).features
-        
+
         ## Steps where we will extract the outputs for skip connections, can be changed
         self.encoder_layers = [
             self.encoder[0:2],
@@ -23,8 +45,8 @@ class UNetMobileNetV2fixed(nn.Module):
             self.encoder[19:24],
             self.encoder[24:],
         ]
-        
-        ## The classifier part can be changed, it probably needs to be more complex when the the parameters of the pretrained model are fixed
+
+        ## The classifier part can be changed; it probably needs to be more complex when the parameters of the pretrained model are fixed
         self.classifier = nn.Sequential(
             nn.Conv2d(320, 256, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
@@ -36,6 +58,15 @@ class UNetMobileNetV2fixed(nn.Module):
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
     def forward(self, x):
+        """
+        Forward pass through the network.
+
+        Args:
+        - x (torch.Tensor): Input tensor of shape (batch_size, channels, height, width).
+
+        Returns:
+        - torch.Tensor: Output tensor of shape (batch_size, num_classes, height, width).
+        """
         # Encoder
         skips = []
         for layer in self.encoder_layers:
@@ -47,23 +78,47 @@ class UNetMobileNetV2fixed(nn.Module):
         for skip in reversed(skips[:-1]):
             x = self.upsample(x)
             x = torch.cat((x, skip), dim=1)
-        
+
         ## Classifier
         x = self.classifier(x)
 
         return x
+
     
 class UNetMobileNetV2unfixed(nn.Module):
-    def __init__(self, num_classes = 1):
+    """
+    U-Net architecture with an unfixed MobileNetV2 encoder for image segmentation.
+
+    Args:
+    - num_classes (int): Number of output channels/classes for segmentation. Default is 1.
+
+    Attributes:
+    - encoder (nn.Module): MobileNetV2 feature extractor with unfixed parameters.
+    - encoder_layers (list): List of encoder layers for skip connections.
+    - classifier (nn.Sequential): Classifier module for the decoder.
+    - upsample (nn.Upsample): Upsampling layer.
+
+    Methods:
+    - forward(x): Forward pass through the network.
+
+    Example:
+    ```python
+    model = UNetMobileNetV2unfixed(num_classes=3)
+    output = model(input_tensor)
+    ```
+
+    Note:
+    The classifier part, the steps for extracting skip connections, and MobileNetV2 parameters can be customized.
+    """
+    def __init__(self, num_classes=1):
         super(UNetMobileNetV2unfixed, self).__init__()
 
-    
         self.encoder = models.mobilenet_v2(pretrained=True).features
-        
+
         ## The MobileNetV2 parameters are not fixed anymore
-        for param in self.encoder.encoder.parameters():
+        for param in self.encoder.parameters():
             param.requires_grad = True
-        
+
         ## Steps where we will extract the outputs for skip connections, can be changed
         self.encoder_layers = [
             self.encoder[0:2],
@@ -74,8 +129,8 @@ class UNetMobileNetV2unfixed(nn.Module):
             self.encoder[19:24],
             self.encoder[24:],
         ]
-        
-        ## The classifier part can be changed, it probably needs to be more complex when the the parameters of the pretrained model are fixed
+
+        ## The classifier part can be changed; it probably needs to be more complex when the parameters of the pretrained model are fixed
         self.classifier = nn.Sequential(
             nn.Conv2d(320, 256, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
@@ -87,6 +142,15 @@ class UNetMobileNetV2unfixed(nn.Module):
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
     def forward(self, x):
+        """
+        Forward pass through the network.
+
+        Args:
+        - x (torch.Tensor): Input tensor of shape (batch_size, channels, height, width).
+
+        Returns:
+        - torch.Tensor: Output tensor of shape (batch_size, num_classes, height, width).
+        """
         # Encoder
         skips = []
         for layer in self.encoder_layers:
@@ -98,23 +162,47 @@ class UNetMobileNetV2unfixed(nn.Module):
         for skip in reversed(skips[:-1]):
             x = self.upsample(x)
             x = torch.cat((x, skip), dim=1)
-        
+
         ## Classifier
         x = self.classifier(x)
 
         return x
+
 
 class UNetMobileNetV2untrained(nn.Module):
-    def __init__(self, num_classes = 1):
+    """
+    U-Net architecture with an untrained MobileNetV2 encoder for image segmentation.
+
+    Args:
+    - num_classes (int): Number of output channels/classes for segmentation. Default is 1.
+
+    Attributes:
+    - encoder (nn.Module): MobileNetV2 feature extractor with untrained parameters.
+    - encoder_layers (list): List of encoder layers for skip connections.
+    - classifier (nn.Sequential): Classifier module for the decoder.
+    - upsample (nn.Upsample): Upsampling layer.
+
+    Methods:
+    - forward(x): Forward pass through the network.
+
+    Example:
+    ```python
+    model = UNetMobileNetV2untrained(num_classes=3)
+    output = model(input_tensor)
+    ```
+
+    Note:
+    The classifier part, the steps for extracting skip connections, and MobileNetV2 parameters can be customized.
+    """
+    def __init__(self, num_classes=1):
         super(UNetMobileNetV2untrained, self).__init__()
 
-    
         self.encoder = models.mobilenet_v2(pretrained=False).features
-        
+
         ## The MobileNetV2 parameters are not fixed anymore
-        for param in self.encoder.encoder.parameters():
+        for param in self.encoder.parameters():
             param.requires_grad = True
-        
+
         ## Steps where we will extract the outputs for skip connections, can be changed
         self.encoder_layers = [
             self.encoder[0:2],
@@ -125,8 +213,8 @@ class UNetMobileNetV2untrained(nn.Module):
             self.encoder[19:24],
             self.encoder[24:],
         ]
-        
-        ## The classifier part can be changed, it probably needs to be more complex when the the parameters of the pretrained model are fixed
+
+        ## The classifier part can be changed; it probably needs to be more complex when the parameters of the pretrained model are fixed
         self.classifier = nn.Sequential(
             nn.Conv2d(320, 256, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
@@ -138,6 +226,15 @@ class UNetMobileNetV2untrained(nn.Module):
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
     def forward(self, x):
+        """
+        Forward pass through the network.
+
+        Args:
+        - x (torch.Tensor): Input tensor of shape (batch_size, channels, height, width).
+
+        Returns:
+        - torch.Tensor: Output tensor of shape (batch_size, num_classes, height, width).
+        """
         # Encoder
         skips = []
         for layer in self.encoder_layers:
@@ -149,16 +246,44 @@ class UNetMobileNetV2untrained(nn.Module):
         for skip in reversed(skips[:-1]):
             x = self.upsample(x)
             x = torch.cat((x, skip), dim=1)
-        
+
         ## Classifier
         x = self.classifier(x)
 
         return x
+
    
 class CustomUnet(nn.Module):
-    def __init__(self, num_channels = 3, num_classes = 1):
+    """
+    Custom U-Net architecture for image segmentation.
+
+    Args:
+    - num_channels (int): Number of input channels. Default is 3.
+    - num_classes (int): Number of output channels/classes for segmentation. Default is 1.
+
+    Attributes:
+    - num_channels (int): Number of input channels.
+    - num_classes (int): Number of output channels/classes for segmentation.
+    - input_layer (nn.Sequential): Input layer with convolutional and normalization operations.
+    - down1, down2, down3, down4 (nn.Sequential): Down-sampling layers.
+    - up1, up2, up3, up4 (nn.Sequential): Up-sampling layers.
+    - output_layer (nn.Conv2d): Output layer with convolutional operation.
+
+    Methods:
+    - forward(x): Forward pass through the network.
+
+    Example:
+    ```python
+    model = CustomUnet(num_channels=3, num_classes=3)
+    output = model(input_tensor)
+    ```
+
+    Note:
+    The kernel size and other architectural aspects can be customized.
+    """
+    def __init__(self, num_channels=3, num_classes=1):
         super(CustomUnet, self).__init__()
-        
+
         self.num_channels = num_channels
         self.num_classes = num_classes
 
@@ -174,18 +299,25 @@ class CustomUnet(nn.Module):
         self.down2 = down(128, 256)
         self.down3 = down(256, 512)
         self.down4 = down(512, 512)
-        
-        
+
         self.up1 = up(1024, 512, 256)
         self.up2 = up(512, 256, 128)
         self.up3 = up(256, 128, 64)
-        self.up3 = up(128, 64, 64)
-        
+        self.up4 = up(128, 64, 64)
+
         ## the kernel size is weird, we'll probably change it
         self.output_layer = nn.Conv2d(64, num_classes, kernel_size=1)
 
     def forward(self, x):
-        
+        """
+        Forward pass through the network.
+
+        Args:
+        - x (torch.Tensor): Input tensor of shape (batch_size, num_channels, height, width).
+
+        Returns:
+        - torch.Tensor: Output tensor of shape (batch_size, num_classes, height, width).
+        """
         x1 = self.input_layer(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)
@@ -196,8 +328,5 @@ class CustomUnet(nn.Module):
         x = self.up3(x, x2)
         x = self.up4(x, x1)
         logits = self.output_layer(x)
-        
+
         return logits
-    
-        
-        
