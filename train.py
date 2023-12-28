@@ -5,6 +5,24 @@ from dataloader import getDataloader
 import argparse
 
 def train_one_epoch(model, training_loader):
+    """
+    Train the model for one epoch using the specified training loader.
+
+    Args:
+    - model (nn.Module): The PyTorch model to be trained.
+    - training_loader (DataLoader): DataLoader for training data.
+
+    Returns:
+    - float: The average training loss for the epoch.
+    
+    Example:
+    ```python
+    train_loss = train_one_epoch(my_model, train_loader)
+    ```
+
+    Note:
+    Ensure that the model is in training mode (`model.train()`) before calling this function.
+    """
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -26,27 +44,51 @@ def train_one_epoch(model, training_loader):
         running_loss += loss.item()
         if i % 1000 == 999:
             last_loss = running_loss / 1000 
-            print('  batch {} loss: {}'.format(i + 1, last_loss))
+            print(f'  batch {i + 1} loss: {last_loss}')
             running_loss = 0.
 
     return last_loss
 
-
 def train_all(model, n_epochs, training_loader):
+    """
+    Train the model for multiple epochs.
+
+    Args:
+    - model (nn.Module): The PyTorch model to be trained.
+    - n_epochs (int): Number of epochs for training.
+    - training_loader (DataLoader): DataLoader for training data.
+
+    Returns:
+    - nn.Module: The trained model.
+    
+    Example:
+    ```python
+    trained_model = train_all(my_model, 5, train_loader)
+    ```
+
+    Note:
+    Ensure that the model is in training mode (`model.train()`) before calling this function.
+    """
     for epoch in range(n_epochs):
-        print('EPOCH {}:'.format(epoch + 1))
+        print(f'EPOCH {epoch + 1}:')
 
         model.train(True)
         avg_loss = train_one_epoch(model, training_loader)
 
-        print('LOSS train {}'.format(avg_loss))
+        print(f'LOSS train {avg_loss}')
     return model
 
+
 def parse_args():
-    """parse command line arguments"""
+    """
+    Parse command line arguments.
+
+    Returns:
+    - argparse.Namespace: An object containing the parsed arguments.
+    """
     parser = argparse.ArgumentParser(description='Train sports ball image segmentation model')
     parser.add_argument(
-        '--model', type=function, default=models.UNetMobileNetV2fixed,
+        '--model', type=str, default='models.UNetMobileNetV2fixed',
         help='Model to train (default: models.UNetMobileNetV2fixed)'
     )
     parser.add_argument(
@@ -55,6 +97,7 @@ def parse_args():
     )
     args = parser.parse_args()
     return args
+
 
 if __name__ == '__main__':
     args = parse_args()
@@ -68,4 +111,3 @@ if __name__ == '__main__':
 
     trained_model = train_all(model, n_epochs, training_loader)
     torch.save(trained_model.state_dict(), f'saved models/{args.model}_{args.n_epochs}_epochs.pt')
-
