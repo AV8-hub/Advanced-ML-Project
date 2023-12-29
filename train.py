@@ -4,6 +4,7 @@ import models
 from dataloader import getDataloader
 import argparse
 import os
+from tqdm import tqdm
 
 def train_one_epoch(model, training_loader):
     """
@@ -22,7 +23,7 @@ def train_one_epoch(model, training_loader):
     running_loss = 0.
     last_loss = 0.
 
-    for i, data in enumerate(training_loader):
+    for i, data in tqdm(enumerate(training_loader)):
         inputs, labels = data
 
         optimizer.zero_grad()
