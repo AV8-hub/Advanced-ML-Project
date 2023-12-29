@@ -15,9 +15,6 @@ def get_coco_annotations(data_split='trainval', annotation_dir='COCOdataset2017'
 
     Returns:
     None
-
-    Raises:
-    - OSError: If unable to create the annotation directory or download the annotations.
     """
     # Specify the COCO dataset annotation URL
     coco_annotation_url = f'http://images.cocodataset.org/annotations/annotations_{data_split}2017.zip'
@@ -65,13 +62,6 @@ def get_images(dataType, folder='./COCOdataset2017', annpath='{}/annotations/ins
 
     Returns:
     None
-
-    Raises:
-    - OSError: If unable to create directories or download images.
-    - coco.CocoApiError: If there is an issue with the COCO API.
-
-    Note:
-    - Requires the COCO API and the 'tqdm' library.
     """
     # Create the images, train, and val directories
     os.makedirs(os.path.join(folder, 'images', dataType), exist_ok=True)

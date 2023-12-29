@@ -20,15 +20,6 @@ class UNetMobileNetV2fixed(nn.Module):
 
     Methods:
     - forward(x): Forward pass through the network.
-
-    Example:
-    ```python
-    model = UNetMobileNetV2fixed(num_classes=3)
-    output = model(input_tensor)
-    ```
-
-    Note:
-    The classifier part and the steps for extracting skip connections can be customized.
     """
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2fixed, self).__init__()
@@ -100,15 +91,6 @@ class UNetMobileNetV2unfixed(nn.Module):
 
     Methods:
     - forward(x): Forward pass through the network.
-
-    Example:
-    ```python
-    model = UNetMobileNetV2unfixed(num_classes=3)
-    output = model(input_tensor)
-    ```
-
-    Note:
-    The classifier part, the steps for extracting skip connections, and MobileNetV2 parameters can be customized.
     """
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2unfixed, self).__init__()
@@ -184,15 +166,6 @@ class UNetMobileNetV2untrained(nn.Module):
 
     Methods:
     - forward(x): Forward pass through the network.
-
-    Example:
-    ```python
-    model = UNetMobileNetV2untrained(num_classes=3)
-    output = model(input_tensor)
-    ```
-
-    Note:
-    The classifier part, the steps for extracting skip connections, and MobileNetV2 parameters can be customized.
     """
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2untrained, self).__init__()
@@ -271,15 +244,6 @@ class CustomUnet(nn.Module):
 
     Methods:
     - forward(x): Forward pass through the network.
-
-    Example:
-    ```python
-    model = CustomUnet(num_channels=3, num_classes=3)
-    output = model(input_tensor)
-    ```
-
-    Note:
-    The kernel size and other architectural aspects can be customized.
     """
     def __init__(self, num_channels=3, num_classes=1):
         super(CustomUnet, self).__init__()

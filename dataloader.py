@@ -22,9 +22,6 @@ def filterDataset(folder, classes, annpath, mode):
     Returns:
     - unique_images (list): List of unique image data dictionaries.
     - coco (COCO): COCO API object.
-
-    Raises:
-    - coco.CocoApiError: If there is an issue with the COCO API.
     """
     # Initialize COCO API for instance annotations
     annFile = annpath.format(folder, mode)
@@ -53,9 +50,6 @@ def getClassName(classID, cats):
 
     Returns:
     - str or None: The name of the class if found, otherwise None.
-
-    Note:
-    - 'cats' is expected to be a list of dictionaries with 'id' and 'name' keys.
     """
     for i in range(len(cats)):
         if cats[i]['id'] == classID:
@@ -74,9 +68,6 @@ def getImage(imageObj, img_folder, input_image_size):
 
     Returns:
     - numpy.ndarray: Normalized and resized image.
-
-    Note:
-    - Requires the 'io' module from the scikit-image library and 'cv2' from the OpenCV library.
     """
     # Read and normalize an image
     train_img = io.imread(os.path.join(img_folder, imageObj['file_name'])) / 255.0
@@ -104,10 +95,6 @@ def getMask(imageObj, classes, coco, catIds, input_image_size):
 
     Returns:
     - numpy.ndarray: Segmentation mask corresponding to the image.
-
-    Note:
-    - Requires the 'cv2' module from the OpenCV library.
-    - Assumes that 'getClassName' and 'coco.annToMask' functions are defined.
     """
     annIds = coco.getAnnIds(imageObj['id'], catIds=catIds, iscrowd=None)
     anns = coco.loadAnns(annIds)
@@ -141,10 +128,6 @@ def getTensors(images, classes, coco, folder, mode, input_image_size):
     Returns:
     - torch.Tensor: Tensor of images.
     - torch.Tensor: Tensor of masks.
-
-    Note:
-    - Assumes that 'getImage' and 'getMask' functions are defined.
-    - Requires the 'torch' library.
     """
     img_folder = os.path.join(folder, 'images', mode)
     dataset_size = len(images)
@@ -184,10 +167,6 @@ def AugmentData(X, y, p=0.5):
     Returns:
     - torch.Tensor: Augmented tensor of images.
     - torch.Tensor: Augmented tensor of masks.
-
-    Note:
-    - Requires the 'torch' and 'torchvision.transforms' (as TF) libraries.
-    - Assumes that 'v2.ColorJitter' is defined.
     """
     n = len(X)
 
@@ -233,10 +212,6 @@ def getDataloader(mode, folder='./COCOdataset2017', classes=['sports ball'],
 
     Returns:
     - DataLoader: PyTorch DataLoader for the specified mode.
-
-    Note:
-    - Assumes that 'filterDataset', 'getTensors', and 'AugmentData' functions are defined.
-    - Requires the 'TensorDataset' and 'DataLoader' classes from the 'torch.utils.data' module.
     """
     images, coco = filterDataset(folder, classes, annpath, mode)
     X, y = getTensors(images, classes, coco, folder, mode, input_image_size)

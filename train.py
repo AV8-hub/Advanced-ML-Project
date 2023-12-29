@@ -14,14 +14,6 @@ def train_one_epoch(model, training_loader):
 
     Returns:
     - float: The average training loss for the epoch.
-    
-    Example:
-    ```python
-    train_loss = train_one_epoch(my_model, train_loader)
-    ```
-
-    Note:
-    Ensure that the model is in training mode (`model.train()`) before calling this function.
     """
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
@@ -60,14 +52,6 @@ def train_all(model, n_epochs, training_loader):
 
     Returns:
     - nn.Module: The trained model.
-    
-    Example:
-    ```python
-    trained_model = train_all(my_model, 5, train_loader)
-    ```
-
-    Note:
-    Ensure that the model is in training mode (`model.train()`) before calling this function.
     """
     for epoch in range(n_epochs):
         print(f'EPOCH {epoch + 1}:')
