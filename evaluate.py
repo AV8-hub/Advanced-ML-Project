@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-import models
+import os
 from dataloader import getDataloader
 import argparse
 import pandas as pd
@@ -84,8 +84,8 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Evaluate sports ball image segmentation model')
     parser.add_argument(
-        '--model', type=function, default=models.UNetMobileNetV2fixed,
-        help='Model to train (default: models.UNetMobileNetV2fixed)'
+        '--model', type=str, default='models.UNetMobileNetV2fixed',
+        help='Model to train (default: "models.UNetMobileNetV2fixed")'
     )
     parser.add_argument(
         '--n-epochs', type=int, default=3,
@@ -107,4 +107,5 @@ if __name__ == '__main__':
 
     results = evaluate(model, validation_loader)
     df_results = pd.DataFrame(results)
+    os.makedirs('results', exist_ok=True)
     df_results.to_csv(f'results/{args.model}_{args.n_epochs}_epochs.csv') 

@@ -3,6 +3,7 @@ import torch.nn as nn
 import models
 from dataloader import getDataloader
 import argparse
+import os
 
 def train_one_epoch(model, training_loader):
     """
@@ -72,7 +73,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Train sports ball image segmentation model')
     parser.add_argument(
-        '--model', type=str, default='models.UNetMobileNetV2fixed',
+        '--model', type=function, default=models.UNetMobileNetV2fixed,
         help='Model to train (default: models.UNetMobileNetV2fixed)'
     )
     parser.add_argument(
@@ -94,4 +95,6 @@ if __name__ == '__main__':
     model = model.to(device)
 
     trained_model = train_all(model, n_epochs, training_loader)
+    
+    os.makedirs('saved models', exist_ok=True)
     torch.save(trained_model.state_dict(), f'saved models/{args.model}_{args.n_epochs}_epochs.pt')
