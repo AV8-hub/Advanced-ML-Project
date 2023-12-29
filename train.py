@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
-import models
+from models import *
 from dataloader import getDataloader
 import argparse
 import os
 from tqdm import tqdm
 
-def train_one_epoch(model, training_loader):
+def train_one_epoch(model, training_loader, accumulation_steps = 10):
     """
     Train the model for one epoch using the specified training loader.
 
@@ -25,19 +25,21 @@ def train_one_epoch(model, training_loader):
 
     for i, data in tqdm(enumerate(training_loader)):
         inputs, labels = data
-
-        optimizer.zero_grad()
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        inputs, labels = inputs.to(device), labels.to(device)
 
         outputs = model(inputs)
 
         loss = loss_fn(outputs, labels)
         loss.backward()
 
-        optimizer.step()
+        if  (i+1)  % accumulation_steps ==  0:  
+            optimizer.step()  
+            optimizer.zero_grad() 
 
         running_loss += loss.item()
-        if i % 1000 == 999:
-            last_loss = running_loss / 1000 
+        if i % 100 == 99:
+            last_loss = running_loss / 100 
             print(f'  batch {i + 1} loss: {last_loss}')
             running_loss = 0.
 
@@ -74,7 +76,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Train sports ball image segmentation model')
     parser.add_argument(
-        '--model', type=type, default=models.UNetMobileNetV2fixed,
+        '--model', type=type, default=UNetMobileNetV2fixed,
         help='Model to train (default: models.UNetMobileNetV2fixed)'
     )
     parser.add_argument(
@@ -89,11 +91,13 @@ if __name__ == '__main__':
     args = parse_args()
 
     training_loader = getDataloader(mode='train')
+    print('Dataloading over')
     model = args.model()
     n_epochs = args.n_epochs
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)
+    print(f"Device used :{device}")
 
     trained_model = train_all(model, n_epochs, training_loader)
     

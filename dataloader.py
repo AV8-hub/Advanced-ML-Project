@@ -156,7 +156,7 @@ def getTensors(images, classes, coco, folder, mode, input_image_size):
     return X, y
 
 
-def AugmentData(X, y, p=0.5):
+def AugmentData(X, y, p=0.3):
     """
     Apply data augmentation to a set of images and masks.
 
@@ -199,7 +199,7 @@ def AugmentData(X, y, p=0.5):
 
 
 def getDataloader(mode, folder='./COCOdataset2017', classes=['sports ball'],
-                  annpath='{}/annotations/instances_{}2017.json', input_image_size=(224, 224), batch_size=64):
+                  annpath='{}/annotations/instances_{}2017.json', input_image_size=(224, 224), batch_size=4):
     """
     Create a DataLoader for a specified mode ('train' or 'val').
 
@@ -221,7 +221,7 @@ def getDataloader(mode, folder='./COCOdataset2017', classes=['sports ball'],
         X, y = AugmentData(X, y)
 
     dataset = TensorDataset(X, y)
-    dataloader = DataLoader(dataset, batch_size=batch_size, num_workers=8)
+    dataloader = DataLoader(dataset, batch_size=batch_size)
 
     return dataloader
 

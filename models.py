@@ -19,12 +19,12 @@ class UNetMobileNetV2fixed(nn.Module):
     - upsample (nn.Upsample): Upsampling layer.
 
     Methods:
-    - forward(x): Forward pass through the network.
+    - forward(x): Forward pass through the network
     """
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2fixed, self).__init__()
 
-        self.encoder = models.mobilenet_v2(pretrained=True).features
+        self.encoder = models.mobilenet_v2(weights='DEFAULT').features
 
         ## Steps where we will extract the outputs for skip connections, can be changed
         self.encoder_layers = [
@@ -39,9 +39,9 @@ class UNetMobileNetV2fixed(nn.Module):
 
         ## The classifier part can be changed; it probably needs to be more complex when the parameters of the pretrained model are fixed
         self.classifier = nn.Sequential(
-            nn.Conv2d(320, 256, kernel_size=3, padding=1),
+            nn.Conv2d(4008, 512, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            nn.Conv2d(512, 256, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(256, num_classes, kernel_size=1)
         )
@@ -66,9 +66,10 @@ class UNetMobileNetV2fixed(nn.Module):
 
         # Decoder
         x = skips[-1]
-        for skip in reversed(skips[:-1]):
-            x = self.upsample(x)
+        for i, skip in enumerate(reversed(skips[:-1])):
             x = torch.cat((x, skip), dim=1)
+            if i > 0:
+                x = self.upsample(x)
 
         ## Classifier
         x = self.classifier(x)
@@ -95,7 +96,7 @@ class UNetMobileNetV2unfixed(nn.Module):
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2unfixed, self).__init__()
 
-        self.encoder = models.mobilenet_v2(pretrained=True).features
+        self.encoder = models.mobilenet_v2(weights='DEFAULT').features
 
         ## The MobileNetV2 parameters are not fixed anymore
         for param in self.encoder.parameters():
@@ -114,9 +115,9 @@ class UNetMobileNetV2unfixed(nn.Module):
 
         ## The classifier part can be changed; it probably needs to be more complex when the parameters of the pretrained model are fixed
         self.classifier = nn.Sequential(
-            nn.Conv2d(320, 256, kernel_size=3, padding=1),
+            nn.Conv2d(4008, 512, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            nn.Conv2d(512, 256, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(256, num_classes, kernel_size=1)
         )
@@ -141,9 +142,10 @@ class UNetMobileNetV2unfixed(nn.Module):
 
         # Decoder
         x = skips[-1]
-        for skip in reversed(skips[:-1]):
-            x = self.upsample(x)
+        for i, skip in enumerate(reversed(skips[:-1])):
             x = torch.cat((x, skip), dim=1)
+            if i > 0:
+                x = self.upsample(x)
 
         ## Classifier
         x = self.classifier(x)
@@ -170,7 +172,7 @@ class UNetMobileNetV2untrained(nn.Module):
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2untrained, self).__init__()
 
-        self.encoder = models.mobilenet_v2(pretrained=False).features
+        self.encoder = models.mobilenet_v2(weights=None).features
 
         ## The MobileNetV2 parameters are not fixed anymore
         for param in self.encoder.parameters():
@@ -189,9 +191,9 @@ class UNetMobileNetV2untrained(nn.Module):
 
         ## The classifier part can be changed; it probably needs to be more complex when the parameters of the pretrained model are fixed
         self.classifier = nn.Sequential(
-            nn.Conv2d(320, 256, kernel_size=3, padding=1),
+            nn.Conv2d(4008, 512, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            nn.Conv2d(512, 256, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(256, num_classes, kernel_size=1)
         )
@@ -216,9 +218,10 @@ class UNetMobileNetV2untrained(nn.Module):
 
         # Decoder
         x = skips[-1]
-        for skip in reversed(skips[:-1]):
-            x = self.upsample(x)
+        for i, skip in enumerate(reversed(skips[:-1])):
             x = torch.cat((x, skip), dim=1)
+            if i > 0:
+                x = self.upsample(x)
 
         ## Classifier
         x = self.classifier(x)
