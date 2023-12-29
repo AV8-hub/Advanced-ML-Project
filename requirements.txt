@@ -7,5 +7,5 @@ pandas==2.1.4
 pycocotools==2.0.7
 requests==2.31.0
 tqdm==4.66.1
-cv2==4.8.1
+opencv-python==4.8.1.78
 
