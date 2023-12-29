@@ -150,8 +150,8 @@ def getTensors(images, classes, coco, folder, mode, input_image_size):
         mask = np.resize(mask, (1, input_image_size[0], input_image_size[1]))
         y.append(mask)
 
-    X = torch.Tensor(X)
-    y = torch.Tensor(y)
+    X = torch.Tensor(np.array(X))
+    y = torch.Tensor(np.array(y))
 
     return X, y
 

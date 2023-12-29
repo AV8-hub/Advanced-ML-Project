@@ -73,7 +73,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Train sports ball image segmentation model')
     parser.add_argument(
-        '--model', type=function, default=models.UNetMobileNetV2fixed,
+        '--model', type=type, default=models.UNetMobileNetV2fixed,
         help='Model to train (default: models.UNetMobileNetV2fixed)'
     )
     parser.add_argument(
