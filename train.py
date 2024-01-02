@@ -17,7 +17,7 @@ def train_one_epoch(model, training_loader, accumulation_steps = 10):
     Returns:
     - float: The average training loss for the epoch.
     """
-    loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.BCEWithLogitsLoss() ## we shouldn't use this loss when working with more than one class
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     running_loss = 0.
@@ -38,8 +38,8 @@ def train_one_epoch(model, training_loader, accumulation_steps = 10):
             optimizer.zero_grad() 
 
         running_loss += loss.item()
-        if i % 100 == 99:
-            last_loss = running_loss / 100 
+        if i % 10 == 9:
+            last_loss = running_loss / 10
             print(f'  batch {i + 1} loss: {last_loss}')
             running_loss = 0.
 

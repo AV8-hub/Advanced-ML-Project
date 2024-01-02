@@ -275,6 +275,8 @@ class CustomUnet(nn.Module):
         ## the kernel size is weird, we'll probably change it
         self.output_layer = nn.Conv2d(64, num_classes, kernel_size=1)
 
+        self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+
     def forward(self, x):
         """
         Forward pass through the network.
@@ -290,10 +292,14 @@ class CustomUnet(nn.Module):
         x3 = self.down2(x2)
         x4 = self.down3(x3)
         x5 = self.down4(x4)
-        x = self.up1(x5, x4)
-        x = self.up2(x, x3)
-        x = self.up3(x, x2)
-        x = self.up4(x, x1)
+        x5 = self.upsample(x5)
+        x = self.up1(torch.cat([x5, x4], dim=1))
+        x = self.upsample(x)
+        x = self.up2(torch.cat([x, x3], dim=1))
+        x = self.upsample(x)
+        x = self.up3(torch.cat([x, x2], dim=1))
+        x = self.upsample(x)
+        x = self.up4(torch.cat([x, x1], dim=1))
         logits = self.output_layer(x)
 
         return logits

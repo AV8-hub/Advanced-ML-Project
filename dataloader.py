@@ -190,7 +190,6 @@ def AugmentData(X, y, p=0.3):
             if random.random() < p:
                 noise = torch.randn(image.size()) * 0.3 + 0.5
                 image = image + noise
-                image = v2.ColorJitter(brightness=random.random())(image)
 
             X = torch.cat((X, image.unsqueeze(0)), 0)
             y = torch.cat((y, mask.unsqueeze(0)), 0)

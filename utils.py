@@ -38,7 +38,6 @@ def up(in_channels, mid_channels, out_channels):
     - nn.Sequential: Sequential block consisting of upsampling, convolution, batch normalization, and ReLU activation.
     """
     return nn.Sequential(
-        nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
         nn.Conv2d(in_channels, mid_channels, kernel_size=3, padding=1),
         nn.BatchNorm2d(mid_channels),
         nn.ReLU(inplace=True),
