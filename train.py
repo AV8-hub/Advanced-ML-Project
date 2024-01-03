@@ -5,6 +5,7 @@ from dataloader import getDataloader
 import argparse
 import os
 from tqdm import tqdm
+from loss import WeightedBinaryCrossEntropyLoss
 
 def train_one_epoch(model, training_loader, accumulation_steps = 10):
     """
@@ -17,7 +18,8 @@ def train_one_epoch(model, training_loader, accumulation_steps = 10):
     Returns:
     - float: The average training loss for the epoch.
     """
-    loss_fn = nn.BCEWithLogitsLoss() ## we shouldn't use this loss when working with more than one class
+    ##loss_fn = nn.BCEWithLogitsLoss() ## we shouldn't use this loss when working with more than one class
+    loss_fn = WeightedBinaryCrossEntropyLoss(pos_weight=50., neg_weight=1.)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     running_loss = 0.
@@ -38,8 +40,8 @@ def train_one_epoch(model, training_loader, accumulation_steps = 10):
             optimizer.zero_grad() 
 
         running_loss += loss.item()
-        if i % 10 == 9:
-            last_loss = running_loss / 10
+        if i % 100 == 99:
+            last_loss = running_loss / 100
             print(f'  batch {i + 1} loss: {last_loss}')
             running_loss = 0.
 
@@ -83,17 +85,22 @@ def parse_args():
         '--n-epochs', type=int, default=3,
         help='Number of epochs (default: 3)'
     )
+    parser.add_argument(
+            '--augment', type=bool, default=False,
+        help='Whether to augment training data or not (default: False)'
+    )
     args = parser.parse_args()
     return args
 
 
 if __name__ == '__main__':
     args = parse_args()
-
-    training_loader = getDataloader(mode='train')
-    print('Dataloading over')
+    
     model = args.model()
     n_epochs = args.n_epochs
+    augment = args.augment
+    training_loader = getDataloader(mode='train', augment=augment)
+    print('Dataloading over')
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)

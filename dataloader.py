@@ -197,7 +197,7 @@ def AugmentData(X, y, p=0.3):
     return X, y
 
 
-def getDataloader(mode, folder='./COCOdataset2017', classes=['sports ball'],
+def getDataloader(mode, augment = False, folder='./COCOdataset2017', classes=['sports ball'],
                   annpath='{}/annotations/instances_{}2017.json', input_image_size=(224, 224), batch_size=4):
     """
     Create a DataLoader for a specified mode ('train' or 'val').
@@ -216,7 +216,7 @@ def getDataloader(mode, folder='./COCOdataset2017', classes=['sports ball'],
     images, coco = filterDataset(folder, classes, annpath, mode)
     X, y = getTensors(images, classes, coco, folder, mode, input_image_size)
 
-    if mode == 'train':
+    if mode == 'train' and augment:
         X, y = AugmentData(X, y)
 
     dataset = TensorDataset(X, y)

@@ -53,22 +53,26 @@ def evaluate(model, validation_loader):
     """
     running_vloss = 0.0
     acc = 0.0
-    batch_size = validation_loader.batch_size
-    loss_fn = nn.CrossEntropyLoss()
+    iou = 0.0
+    loss_fn = WeightedBinaryCrossEntropyLoss(pos_weight=50., neg_weight=1.)
     model.eval()
+    count = 0.0
 
     with torch.no_grad():
-        for i, vdata in enumerate(validation_loader):
+        for i, vdata in enumerate(val_dataloader):
             vinputs, vlabels = vdata
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            vinputs, vlabels = vinputs.to(device), vlabels.to(device)
             voutputs = model(vinputs)
             vloss = loss_fn(voutputs, vlabels)
             running_vloss += vloss
-            ACC += accuracy(voutputs, vlabels) / vinputs.shape[0]
-            IOU += IOU(voutputs, vlabels) / vinputs.shape[0]
+            voutputs = torch.round(torch.sigmoid(voutputs))
+            acc += accuracy(voutputs, vlabels) / vinputs.shape[0]
+            iou += IOU(voutputs, vlabels) / vinputs.shape[0]
 
     avg_vloss = running_vloss / (i + 1)
-    avg_acc = ACC / (i + 1)
-    avg_iou = IOU / (i + 1)
+    avg_acc = acc / (i + 1)
+    avg_iou = iou / (i + 1)
     print('LOSS valid {}'.format(avg_vloss))
     print('Average Accuracy valid {}'.format(avg_acc))
     print('Average IOU valid {}'.format(avg_iou))
