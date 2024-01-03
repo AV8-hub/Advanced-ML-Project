@@ -5,6 +5,7 @@ import os
 from dataloader import getDataloader
 import argparse
 import pandas as pd
+from loss import WeightedBinaryCrossEntropyLoss
 
 def accuracy(outputs, labels):
     """
@@ -59,7 +60,7 @@ def evaluate(model, validation_loader):
     count = 0.0
 
     with torch.no_grad():
-        for i, vdata in enumerate(val_dataloader):
+        for i, vdata in enumerate(validation_loader):
             vinputs, vlabels = vdata
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
             vinputs, vlabels = vinputs.to(device), vlabels.to(device)
