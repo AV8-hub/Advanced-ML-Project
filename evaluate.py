@@ -55,7 +55,7 @@ def evaluate(model, validation_loader):
     running_vloss = 0.0
     acc = 0.0
     iou = 0.0
-    loss_fn = WeightedBinaryCrossEntropyLoss(pos_weight=50., neg_weight=1.)
+    loss_fn = WeightedBinaryCrossEntropyLoss()
     model.eval()
     count = 0.0
 
@@ -68,8 +68,8 @@ def evaluate(model, validation_loader):
             vloss = loss_fn(voutputs, vlabels)
             running_vloss += vloss
             voutputs = torch.round(torch.sigmoid(voutputs))
-            acc += accuracy(voutputs, vlabels) / vinputs.shape[0]
-            iou += IOU(voutputs, vlabels) / vinputs.shape[0]
+            acc += accuracy(voutputs, vlabels) 
+            iou += IOU(voutputs, vlabels) 
 
     avg_vloss = running_vloss / (i + 1)
     avg_acc = acc / (i + 1)

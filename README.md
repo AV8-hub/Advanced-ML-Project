@@ -1,3 +1,5 @@
+peut-être que j'évalue pas sur le modèle totalement entraîné vu les valeurs de loss
+peut-être que y a un problème dans les données d'entrée vu à quoi elles ressemblent (regarder toutes les fonctions de dataloader, qund je resize, est-ce que je resize aussi le mask? oui je pense)
 ## Sports Ball Image Segmentation
 
 3A ENSAE 2023/2024 : Advanced ML Project
@@ -6,7 +8,11 @@ BORDES Martin and ROSUNEE Avichaï
 
 This project focuses on leveraging neural network models for accurate image segmentation of sports balls using the COCO dataset. We explore state-of-the-art architectures, including U-Net, Mask R-CNN, and DeepLab, adapting them to diverse sports scenarios. The goal is to enhance sports analytics by providing precise segmentation in dynamic settings.
 
-If launching on SSP Cloud : put this on the terminal -> sudo apt-get update
+If launching on SSP Cloud : put this on the terminal -> 
+sudo apt-get update
+sudo apt-get install libgl1-mesa-glx
+
+sudo apt-get update
 sudo apt-get install libglib2.0-0
 
 

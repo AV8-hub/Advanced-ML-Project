@@ -7,7 +7,7 @@ import os
 from tqdm import tqdm
 from loss import WeightedBinaryCrossEntropyLoss
 
-def train_one_epoch(model, training_loader, accumulation_steps = 10):
+def train_one_epoch(model, training_loader, accumulation_steps = 1):
     """
     Train the model for one epoch using the specified training loader.
 
@@ -19,11 +19,12 @@ def train_one_epoch(model, training_loader, accumulation_steps = 10):
     - float: The average training loss for the epoch.
     """
     ##loss_fn = nn.BCEWithLogitsLoss() ## we shouldn't use this loss when working with more than one class
-    loss_fn = WeightedBinaryCrossEntropyLoss(pos_weight=50., neg_weight=1.)
+    loss_fn = WeightedBinaryCrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     running_loss = 0.
     last_loss = 0.
+    final_loss = 0.
 
     for i, data in tqdm(enumerate(training_loader)):
         inputs, labels = data
@@ -40,12 +41,13 @@ def train_one_epoch(model, training_loader, accumulation_steps = 10):
             optimizer.zero_grad() 
 
         running_loss += loss.item()
+        final_loss += loss.item()
         if i % 100 == 99:
             last_loss = running_loss / 100
             print(f'  batch {i + 1} loss: {last_loss}')
             running_loss = 0.
 
-    return last_loss
+    return final_loss / (i+1)
 
 def train_all(model, n_epochs, training_loader):
     """
@@ -76,7 +78,7 @@ def parse_args():
     Returns:
     - argparse.Namespace: An object containing the parsed arguments.
     """
-    parser = argparse.ArgumentParser(description='Train sports ball image segmentation model')
+    parser = argparse.ArgumentParser(description='Train image segmentation model')
     parser.add_argument(
         '--model', type=type, default=UNetMobileNetV2fixed,
         help='Model to train (default: models.UNetMobileNetV2fixed)'

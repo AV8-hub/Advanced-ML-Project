@@ -142,12 +142,14 @@ def getTensors(images, classes, coco, folder, mode, input_image_size):
 
         ### Retrieve Image ###
         img = getImage(imageObj, img_folder, input_image_size)
-        img = np.resize(img, (3, input_image_size[0], input_image_size[1]))
+        img = np.transpose(img, (2, 0, 1))
+        ##img = np.resize(img, (3, input_image_size[0], input_image_size[1]))
         X.append(img)
 
         ### Create Mask ###
         mask = getMask(imageObj, classes, coco, catIds, input_image_size)
-        mask = np.resize(mask, (1, input_image_size[0], input_image_size[1]))
+        mask = np.transpose(mask, (2, 0, 1))
+        ##mask = np.resize(mask, (1, input_image_size[0], input_image_size[1]))
         y.append(mask)
 
     X = torch.Tensor(np.array(X))
@@ -197,7 +199,7 @@ def AugmentData(X, y, p=0.3):
     return X, y
 
 
-def getDataloader(mode, augment = False, folder='./COCOdataset2017', classes=['sports ball'],
+def getDataloader(mode, augment = False, folder='./COCOdataset2017', classes=['train'],
                   annpath='{}/annotations/instances_{}2017.json', input_image_size=(224, 224), batch_size=4):
     """
     Create a DataLoader for a specified mode ('train' or 'val').
@@ -205,7 +207,7 @@ def getDataloader(mode, augment = False, folder='./COCOdataset2017', classes=['s
     Parameters:
     - mode (str): The data split mode, e.g., 'train' or 'val'.
     - folder (str): The root directory of the COCO dataset. Default is './COCOdataset2017'.
-    - classes (list): List of class names. Default is ['sports ball'].
+    - classes (list): List of class names. Default is ['train'].
     - annpath (str): The format of the annotations json path. Default is '{}/annotations/instances_{}2017.json'.
     - input_image_size (tuple): Target size for the images, e.g., (height, width). Default is (224, 224).
     - batch_size (int): Batch size for the DataLoader. Default is 64.
