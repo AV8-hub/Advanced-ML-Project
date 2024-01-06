@@ -15,6 +15,8 @@ sudo apt-get install libgl1-mesa-glx
 sudo apt-get update
 sudo apt-get install libglib2.0-0
 
+results time : CustomUnet 30 epochs->6h 50 epochs->7h30
+
 
 ### Getting the data
 

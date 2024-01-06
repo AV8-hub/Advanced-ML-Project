@@ -81,7 +81,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Train image segmentation model')
     parser.add_argument(
         '--model', type=type, default=UNetMobileNetV2fixed,
-        help='Model to train (default: models.UNetMobileNetV2fixed)'
+        help='Model to train (default: UNetMobileNetV2fixed)'
     )
     parser.add_argument(
         '--n-epochs', type=int, default=3,
@@ -111,4 +111,4 @@ if __name__ == '__main__':
     trained_model = train_all(model, n_epochs, training_loader)
     
     os.makedirs('saved models', exist_ok=True)
-    torch.save(trained_model.state_dict(), f'saved models/{args.model}_{args.n_epochs}_epochs.pt')
+    torch.save(trained_model.state_dict(), f'saved models/{trained_model.name}_{args.n_epochs}_epochs.pt')

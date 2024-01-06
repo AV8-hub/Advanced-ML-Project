@@ -24,6 +24,8 @@ class UNetMobileNetV2fixed(nn.Module):
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2fixed, self).__init__()
 
+        self.name = UNetMobileNetV2fixed
+
         self.encoder = models.mobilenet_v2(weights='DEFAULT').features
 
         ## Steps where we will extract the outputs for skip connections, can be changed
@@ -95,6 +97,8 @@ class UNetMobileNetV2unfixed(nn.Module):
     """
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2unfixed, self).__init__()
+
+        self.name = UNetMobileNetV2unfixed
 
         self.encoder = models.mobilenet_v2(weights='DEFAULT').features
 
@@ -171,6 +175,8 @@ class UNetMobileNetV2untrained(nn.Module):
     """
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2untrained, self).__init__()
+
+        self.name = UNetMobileNetV2untrained
 
         self.encoder = models.mobilenet_v2(weights=None).features
 
@@ -250,6 +256,8 @@ class CustomUnet(nn.Module):
     """
     def __init__(self, num_channels=3, num_classes=1):
         super(CustomUnet, self).__init__()
+
+        self.name = CustomUnet
 
         self.num_channels = num_channels
         self.num_classes = num_classes

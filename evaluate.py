@@ -6,6 +6,7 @@ from dataloader import getDataloader
 import argparse
 import pandas as pd
 from loss import WeightedBinaryCrossEntropyLoss
+from models import *
 
 def accuracy(outputs, labels):
     """
@@ -77,7 +78,7 @@ def evaluate(model, validation_loader):
     print('LOSS valid {}'.format(avg_vloss))
     print('Average Accuracy valid {}'.format(avg_acc))
     print('Average IOU valid {}'.format(avg_iou))
-    return {'Average Loss':avg_vloss, 'Average Accuracy':avg_acc, 'Average IOU':avg_iou}
+    return {'Average Loss':[float(avg_vloss)], 'Average Accuracy':[avg_acc], 'Average IOU':[avg_iou]}
 
 
 def parse_args():
@@ -89,8 +90,8 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Evaluate sports ball image segmentation model')
     parser.add_argument(
-        '--model', type=str, default='models.UNetMobileNetV2fixed',
-        help='Model to train (default: "models.UNetMobileNetV2fixed")'
+        '--model', type=type, default=UNetMobileNetV2fixed,
+        help='Model to train (default: "UNetMobileNetV2fixed")'
     )
     parser.add_argument(
         '--n-epochs', type=int, default=3,
@@ -105,7 +106,7 @@ if __name__ == '__main__':
 
     validation_loader = getDataloader(mode='val')
     model = args.model()
-    model.load_state_dict(torch.load(f'saved models/{args.model}_{args.n_epochs}_epochs.pt'))
+    model.load_state_dict(torch.load(f'saved models/{model.name}_{args.n_epochs}_epochs.pt'))
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)
@@ -113,4 +114,4 @@ if __name__ == '__main__':
     results = evaluate(model, validation_loader)
     df_results = pd.DataFrame(results)
     os.makedirs('results', exist_ok=True)
-    df_results.to_csv(f'results/{args.model}_{args.n_epochs}_epochs.csv') 
+    df_results.to_csv(f'results/{args.model}_{args.n_epochs}_epochs.csv')
