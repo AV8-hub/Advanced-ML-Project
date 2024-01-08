@@ -17,6 +17,12 @@ sudo apt-get install libglib2.0-0
 
 results time : CustomUnet 30 epochs->6h 50 epochs->7h30
 
+## Install the requirements
+
+```bash
+pip install -r requirements.txt
+```
+
 
 ### Getting the data
 

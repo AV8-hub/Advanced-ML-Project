@@ -50,7 +50,7 @@ def get_coco_annotations(data_split='trainval', annotation_dir='COCOdataset2017'
     print(f"Extracted {data_split} annotations to: {annotation_dir}")
 
 
-def get_images(dataType, folder='./COCOdataset2017', annpath='{}/annotations/instances_{}2017.json', classes=['sports ball']):
+def get_images(dataType, folder='./COCOdataset2017', annpath='{}/annotations/instances_{}2017.json', classes=['train']):
     """
     Download and save COCO dataset images for a specified data type and class categories.
 
@@ -58,7 +58,7 @@ def get_images(dataType, folder='./COCOdataset2017', annpath='{}/annotations/ins
     - dataType (str): The type of data to download, e.g., 'train' or 'val'.
     - folder (str): The root directory to store the downloaded images. Default is './COCOdataset2017'.
     - annpath (str): The format of the annotations json path. Default is '{}/annotations/instances_{}2017.json'.
-    - classes (list): A list of category names of interest. Default is ['sports ball'].
+    - classes (list): A list of category names of interest. Default is ['train'].
 
     Returns:
     None

@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class WeightedBinaryCrossEntropyLoss(nn.Module):
-    def __init__(self, pos_weight=2., neg_weight=1.):
+    def __init__(self, pos_weight=1.8, neg_weight=1.):
         """
         Args:
             pos_weight (float, optional): A weight for the positive class. Defaults to None.
