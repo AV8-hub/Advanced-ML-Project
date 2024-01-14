@@ -91,6 +91,10 @@ def parse_args():
             '--augment', type=bool, default=False,
         help='Whether to augment training data or not (default: False)'
     )
+    parser.add_argument(
+            '--object', type=str, default="train",
+        help='Object on which the model should be trained (default: "train").'
+    )
     args = parser.parse_args()
     return args
 
@@ -102,7 +106,8 @@ if __name__ == '__main__':
     n_epochs = args.n_epochs
     augment = args.augment
     aug = "_aug" if augment else ""
-    training_loader = getDataloader(mode='train', augment=augment)
+    object = args.object
+    training_loader = getDataloader(mode='train', augment=augment, classes=[object])
     print('Dataloading over')
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -112,4 +117,4 @@ if __name__ == '__main__':
     trained_model = train_all(model, n_epochs, training_loader)
     
     os.makedirs('saved models', exist_ok=True)
-    torch.save(trained_model.state_dict(), f'saved models/{trained_model.name}_{args.n_epochs}_epochs{aug}.pt')
+    torch.save(trained_model.state_dict(), f'saved models/{object}/{trained_model.name}_{args.n_epochs}_epochs{aug}.pt')

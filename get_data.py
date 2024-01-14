@@ -3,6 +3,7 @@ import requests
 import os
 from tqdm import tqdm
 from zipfile import ZipFile
+import argparse
 
 def get_coco_annotations(data_split='trainval', annotation_dir='COCOdataset2017'):
     """
@@ -83,9 +84,27 @@ def get_images(dataType, folder='./COCOdataset2017', annpath='{}/annotations/ins
         with open(os.path.join(folder, 'images', dataType, im['file_name']), 'wb') as handler:
             handler.write(img_data)
 
+def parse_args():
+    """
+    Parse command line arguments.
+
+    Returns:
+    - argparse.Namespace: An object containing the parsed arguments.
+    """
+    parser = argparse.ArgumentParser(description='Get images for image segmentation')
+    parser.add_argument(
+            '--object', type=str, default="train",
+        help='Object to get images of (default: "train").'
+    )
+    args = parser.parse_args()
+    return args
 
 if __name__ == '__main__':
+    args = parse_args()
+
+    object = args.object
+
     get_coco_annotations(data_split='trainval')
-    get_images(dataType = 'train')
-    get_images(dataType = 'val')
+    get_images(dataType = 'train', classes=[object])
+    get_images(dataType = 'val', classes=[object])
 

@@ -88,10 +88,10 @@ def parse_args():
     Returns:
     - argparse.Namespace: Parsed arguments.
     """
-    parser = argparse.ArgumentParser(description='Evaluate sports ball image segmentation model')
+    parser = argparse.ArgumentParser(description='Evaluate image segmentation model')
     parser.add_argument(
         '--model', type=type, default=UNetMobileNetV2fixed,
-        help='Model to train (default: "UNetMobileNetV2fixed")'
+        help='Model to evaluate (default: UNetMobileNetV2fixed)'
     )
     parser.add_argument(
         '--n-epochs', type=int, default=3,
@@ -99,7 +99,11 @@ def parse_args():
     )
     parser.add_argument(
             '--augment', type=bool, default=False,
-        help='Whether to augment training data or not (default: False)'
+        help='Whether training data was augmented or not (default: False)'
+    )
+    parser.add_argument(
+            '--object', type=str, default="train",
+        help='Object on which the model was trained (default: "train")'
     )
     args = parser.parse_args()
     return args
@@ -112,7 +116,8 @@ if __name__ == '__main__':
     model = args.model()
     augment = args.augment
     aug = "_aug" if augment else ""
-    model.load_state_dict(torch.load(f'saved models/{model.name}_{args.n_epochs}_epochs{aug}.pt'))
+    object = args.object
+    model.load_state_dict(torch.load(f'saved models/{object}/{model.name}_{args.n_epochs}_epochs{aug}.pt'))
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)
@@ -120,4 +125,4 @@ if __name__ == '__main__':
     results = evaluate(model, validation_loader)
     df_results = pd.DataFrame(results)
     os.makedirs('results', exist_ok=True)
-    df_results.to_csv(f'results/{args.model}_{args.n_epochs}_epochs{aug}.csv')
+    df_results.to_csv(f'results/{object}/{model.name}_{args.n_epochs}_epochs{aug}.csv')
