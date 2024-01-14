@@ -97,6 +97,10 @@ def parse_args():
         '--n-epochs', type=int, default=3,
         help='Number of epochs (default: 3)'
     )
+    parser.add_argument(
+            '--augment', type=bool, default=False,
+        help='Whether to augment training data or not (default: False)'
+    )
     args = parser.parse_args()
     return args
 
@@ -106,7 +110,9 @@ if __name__ == '__main__':
 
     validation_loader = getDataloader(mode='val')
     model = args.model()
-    model.load_state_dict(torch.load(f'saved models/{model.name}_{args.n_epochs}_epochs.pt'))
+    augment = args.augment
+    aug = "_aug" if augment else ""
+    model.load_state_dict(torch.load(f'saved models/{model.name}_{args.n_epochs}_epochs{aug}.pt'))
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)
@@ -114,4 +120,4 @@ if __name__ == '__main__':
     results = evaluate(model, validation_loader)
     df_results = pd.DataFrame(results)
     os.makedirs('results', exist_ok=True)
-    df_results.to_csv(f'results/{args.model}_{args.n_epochs}_epochs.csv')
+    df_results.to_csv(f'results/{args.model}_{args.n_epochs}_epochs{aug}.csv')

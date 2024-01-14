@@ -101,6 +101,7 @@ if __name__ == '__main__':
     model = args.model()
     n_epochs = args.n_epochs
     augment = args.augment
+    aug = "_aug" if augment else ""
     training_loader = getDataloader(mode='train', augment=augment)
     print('Dataloading over')
 
@@ -111,4 +112,4 @@ if __name__ == '__main__':
     trained_model = train_all(model, n_epochs, training_loader)
     
     os.makedirs('saved models', exist_ok=True)
-    torch.save(trained_model.state_dict(), f'saved models/{trained_model.name}_{args.n_epochs}_epochs.pt')
+    torch.save(trained_model.state_dict(), f'saved models/{trained_model.name}_{args.n_epochs}_epochs{aug}.pt')
