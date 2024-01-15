@@ -280,7 +280,6 @@ class CustomUnet(nn.Module):
         self.up3 = up(256, 128, 64)
         self.up4 = up(128, 64, 64)
 
-        ## the kernel size is weird, we'll probably change it
         self.output_layer = nn.Conv2d(64, num_classes, kernel_size=1)
 
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
