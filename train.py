@@ -84,15 +84,15 @@ def parse_args():
         help='Model to train (default: UNetMobileNetV2fixed)'
     )
     parser.add_argument(
-        '--n-epochs', type=int, default=3,
-        help='Number of epochs (default: 3)'
+        '--n-epochs', type=int, default=5,
+        help='Number of epochs (default: 5)'
     )
     parser.add_argument(
-            '--augment', type=bool, default=False,
+        '--augment', type=bool, default=False,
         help='Whether to augment training data or not (default: False)'
     )
     parser.add_argument(
-            '--object', type=str, default="train",
+        '--object', type=str, default="train",
         help='Object on which the model should be trained (default: "train").'
     )
     args = parser.parse_args()
