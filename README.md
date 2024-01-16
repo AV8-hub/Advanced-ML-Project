@@ -37,13 +37,13 @@ WARNING : this step takes more than 30 minutes (on the Onyxia SSPCloud Datalab)
 
 ## How to recreate our results 
 
-Recreating our results is possible by doing all over again from the training with the following steps. If you do not have hours in front of you, you can simply evaluate a model without training it by using our already trained models (skip the training step).
+Recreating our results is possible by doing all over again from the training with the following steps. If you do not have hours in front of you, you can simply evaluate a model without training it by using our already trained models (skip the training step) (you should still use a GPU).
 
 ### Training your model
 
 In order to train a model, you can use the train.py file. This file will first put our data in a good format, in particular by constructing the mask, and then train a model on it. You should write the exact model you want to train by giving the name of the class after --model. You should also specify the number of epochs, whether to add the augmentation strategy or not and on which objet to train the model. The default values are specified here:
 ```bash
-python train.py --model UNetMobileNetV2fixed --n-epochs 5 --augment False --object "train"
+python train.py --model CustomUnet --n-epochs 15 --augment False --object "train"
 ```
 The corresponding trained model will be stored in the "saved models" folder.
 
@@ -52,7 +52,7 @@ The corresponding trained model will be stored in the "saved models" folder.
 
 After training it, a model can be evaluated using the evaluate.py file. You should specify the same arguments as before
 ```bash
-python evaluate.py --model UNetMobileNetV2fixed --n-epochs 5 --augment False --object "train"
+python evaluate.py --model CustomUnet --n-epochs 15 --augment False --object "train"
 ```
 This will create a .csv file containing the loss, the accuracy as well as the IoU score, stored in the "results" folder.
 

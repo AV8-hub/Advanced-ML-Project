@@ -79,12 +79,12 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Train image segmentation model')
     parser.add_argument(
-        '--model', type=type, default=UNetMobileNetV2fixed,
-        help='Model to train (default: UNetMobileNetV2fixed)'
+        '--model', type=type, default=CustomUnet,
+        help='Model to train (default: CustomUnet)'
     )
     parser.add_argument(
-        '--n-epochs', type=int, default=5,
-        help='Number of epochs (default: 5)'
+        '--n-epochs', type=int, default=15,
+        help='Number of epochs (default: 15)'
     )
     parser.add_argument(
         '--augment', type=bool, default=False,
@@ -101,7 +101,8 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     
-    model = args.model()
+    name_model = args.model
+    model = UNetMobileNetV2fixed() if name_model==UNetMobileNetV2fixed else (UNetMobileNetV2unfixed() if name_model==UNetMobileNetV2unfixed else CustomUnet())
     n_epochs = args.n_epochs
     augment = args.augment
     aug = "_aug" if augment else ""

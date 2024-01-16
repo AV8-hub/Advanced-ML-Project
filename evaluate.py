@@ -90,12 +90,12 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Evaluate image segmentation model')
     parser.add_argument(
-        '--model', type=type, default=UNetMobileNetV2fixed,
+        '--model', type=type, default=CustomUnet,
         help='Model to evaluate (default: UNetMobileNetV2fixed)'
     )
     parser.add_argument(
-        '--n-epochs', type=int, default=5,
-        help='Number of epochs (default: 5)'
+        '--n-epochs', type=int, default=15,
+        help='Number of epochs (default: 15)'
     )
     parser.add_argument(
         '--augment', type=bool, default=False,
@@ -121,9 +121,7 @@ if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model.load_state_dict(torch.load(f'saved models/{object}/{model.name}_{args.n_epochs}_epochs{aug}.pt', map_location=torch.device(device)))
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)
-
     results = evaluate(model, validation_loader)
     df_results = pd.DataFrame(results)
     os.makedirs('results', exist_ok=True)
