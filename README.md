@@ -6,19 +6,6 @@ BORDES Martin and ROSUNEE Avichaï
 
 This project focuses on leveraging neural network models for accurate image segmentation of sports balls and trains using the COCO dataset but can be adapted to of the 91 classes present in the dataset. We compare a simple U-Net to a U-Net using transfer learning and the pretrained model MobileNet-V2.
 
-If launching on SSP Cloud : put this on the terminal -> 
-cd Advanced-ML-Project
-
-pip install -r requirements.txt
-
-sudo apt-get update
-sudo apt-get install libgl1-mesa-glx
-
-sudo apt-get update
-sudo apt-get install libglib2.0-0
-
-python get_data.py
-
 ### Installing the requirements
 
 ```bash
