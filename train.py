@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from models import *
 from dataloader import getDataloader
 import argparse
@@ -7,7 +6,7 @@ import os
 from tqdm import tqdm
 from loss import WeightedBinaryCrossEntropyLoss
 
-def train_one_epoch(model, training_loader, accumulation_steps = 1):
+def train_one_epoch(model, training_loader):
     """
     Train the model for one epoch using the specified training loader.
 
@@ -18,7 +17,6 @@ def train_one_epoch(model, training_loader, accumulation_steps = 1):
     Returns:
     - float: The average training loss for the epoch.
     """
-    ##loss_fn = nn.BCEWithLogitsLoss() ## we shouldn't use this loss when working with more than one class
     loss_fn = WeightedBinaryCrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -26,6 +24,7 @@ def train_one_epoch(model, training_loader, accumulation_steps = 1):
     last_loss = 0.
     final_loss = 0.
 
+    # Loop over the mini-batches
     for i, data in tqdm(enumerate(training_loader)):
         inputs, labels = data
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -36,9 +35,8 @@ def train_one_epoch(model, training_loader, accumulation_steps = 1):
         loss = loss_fn(outputs, labels)
         loss.backward()
 
-        if  (i+1)  % accumulation_steps ==  0:  
-            optimizer.step()  
-            optimizer.zero_grad() 
+        optimizer.step()  
+        optimizer.zero_grad() 
 
         running_loss += loss.item()
         final_loss += loss.item()
@@ -61,6 +59,7 @@ def train_all(model, n_epochs, training_loader):
     Returns:
     - nn.Module: The trained model.
     """
+    # Loop over the epochs
     for epoch in range(n_epochs):
         print(f'EPOCH {epoch + 1}:')
 
@@ -107,14 +106,19 @@ if __name__ == '__main__':
     augment = args.augment
     aug = "_aug" if augment else ""
     object = args.object
+
+    # Get the clean dataloaders including the segmentation masks
     training_loader = getDataloader(mode='train', augment=augment, classes=[object])
     print('Dataloading over')
 
+    # Move to a GPU if available
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)
     print(f"Device used :{device}")
 
+    # Train the model
     trained_model = train_all(model, n_epochs, training_loader)
     
+    # Save the model
     os.makedirs('saved models', exist_ok=True)
     torch.save(trained_model.state_dict(), f'saved models/{object}/{trained_model.name}_{args.n_epochs}_epochs{aug}.pt')

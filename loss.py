@@ -34,4 +34,4 @@ class WeightedBinaryCrossEntropyLoss(nn.Module):
             neg_mask = target == 0.
             bce_loss[neg_mask] *= self.neg_weight
 
-        return torch.mean(bce_loss)
+        return torch.mean(bce_loss) # Reduction is always 'mean'

@@ -32,7 +32,8 @@ def get_coco_annotations(data_split='trainval', annotation_dir='COCOdataset2017'
     total_size = int(response.headers.get('content-length', 0))
     block_size = 1024  # 1 KB
     progress_bar = tqdm(total=total_size, unit='B', unit_scale=True)
-
+    
+    # Save the annotations into a local folder
     with open(zip_filepath, 'wb') as zip_file:
         for data in response.iter_content(block_size):
             progress_bar.update(len(data))

@@ -1,12 +1,11 @@
 import torch
-import torch.nn as nn
 import numpy as np
 import os
 from dataloader import getDataloader
 import argparse
 import pandas as pd
 from loss import WeightedBinaryCrossEntropyLoss
-from models import *
+from models import UNetMobileNetV2fixed, UNetMobileNetV2unfixed, CustomUnet
 
 def accuracy(outputs, labels):
     """
@@ -58,7 +57,6 @@ def evaluate(model, validation_loader):
     iou = 0.0
     loss_fn = WeightedBinaryCrossEntropyLoss()
     model.eval()
-    count = 0.0
 
     with torch.no_grad():
         for i, vdata in enumerate(validation_loader):
@@ -69,16 +67,18 @@ def evaluate(model, validation_loader):
             vloss = loss_fn(voutputs, vlabels)
             running_vloss += vloss
             voutputs = torch.round(torch.sigmoid(voutputs))
-            acc += accuracy(voutputs, vlabels) 
-            iou += IOU(voutputs, vlabels) 
+            acc += accuracy(voutputs, vlabels)
+            iou += IOU(voutputs, vlabels)
 
     avg_vloss = running_vloss / (i + 1)
     avg_acc = acc / (i + 1)
     avg_iou = iou / (i + 1)
+
     print('LOSS valid {}'.format(avg_vloss))
     print('Average Accuracy valid {}'.format(avg_acc))
     print('Average IOU valid {}'.format(avg_iou))
-    return {'Average Loss':[float(avg_vloss)], 'Average Accuracy':[avg_acc], 'Average IOU':[avg_iou]}
+    results = {'Average Loss':[float(avg_vloss)], 'Average Accuracy':[avg_acc], 'Average IOU':[avg_iou], 'Running Time':[running_time]}
+    return results
 
 
 def parse_args():
@@ -112,12 +112,14 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    validation_loader = getDataloader(mode='val')
-    model = args.model()
+    name_model = args.model
+    model = UNetMobileNetV2fixed() if name_model==UNetMobileNetV2fixed else (UNetMobileNetV2unfixed() if name_model==UNetMobileNetV2unfixed else CustomUnet())
     augment = args.augment
     aug = "_aug" if augment else ""
     object = args.object
-    model.load_state_dict(torch.load(f'saved models/{object}/{model.name}_{args.n_epochs}_epochs{aug}.pt'))
+    validation_loader = getDataloader(mode='val', classes=[object])
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model.load_state_dict(torch.load(f'saved models/{object}/{model.name}_{args.n_epochs}_epochs{aug}.pt', map_location=torch.device(device)))
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)

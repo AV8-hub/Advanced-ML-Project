@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
-import numpy as np
-import pandas as pd
 from utils import up, down
 
 class UNetMobileNetV2fixed(nn.Module):
@@ -24,11 +22,11 @@ class UNetMobileNetV2fixed(nn.Module):
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2fixed, self).__init__()
 
-        self.name = UNetMobileNetV2fixed
+        self.name = 'UNetMobileNetV2fixed'
 
         self.encoder = models.mobilenet_v2(weights='DEFAULT').features
 
-        ## Steps where we will extract the outputs for skip connections, can be changed
+        # Steps where we will extract the outputs for skip connections
         self.encoder_layers = [
             self.encoder[0:2],
             self.encoder[2:4],
@@ -39,7 +37,7 @@ class UNetMobileNetV2fixed(nn.Module):
             self.encoder[24:],
         ]
 
-        ## The classifier part can be changed; it probably needs to be more complex when the parameters of the pretrained model are fixed
+
         self.classifier = nn.Sequential(
             nn.Conv2d(4008, 512, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
@@ -73,10 +71,10 @@ class UNetMobileNetV2fixed(nn.Module):
             if i > 0:
                 x = self.upsample(x)
 
-        ## Classifier
-        x = self.classifier(x)
+        # Classifier
+        logits = self.classifier(x)
 
-        return x
+        return logits
 
     
 class UNetMobileNetV2unfixed(nn.Module):
@@ -98,15 +96,15 @@ class UNetMobileNetV2unfixed(nn.Module):
     def __init__(self, num_classes=1):
         super(UNetMobileNetV2unfixed, self).__init__()
 
-        self.name = UNetMobileNetV2unfixed
+        self.name = 'UNetMobileNetV2unfixed'
 
         self.encoder = models.mobilenet_v2(weights='DEFAULT').features
 
-        ## The MobileNetV2 parameters are not fixed anymore
+        # The MobileNetV2 parameters are not fixed anymore
         for param in self.encoder.parameters():
             param.requires_grad = True
 
-        ## Steps where we will extract the outputs for skip connections, can be changed
+        # Steps where we will extract the outputs for skip connections
         self.encoder_layers = [
             self.encoder[0:2],
             self.encoder[2:4],
@@ -117,7 +115,7 @@ class UNetMobileNetV2unfixed(nn.Module):
             self.encoder[24:],
         ]
 
-        ## The classifier part can be changed; it probably needs to be more complex when the parameters of the pretrained model are fixed
+        
         self.classifier = nn.Sequential(
             nn.Conv2d(4008, 512, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
@@ -151,10 +149,10 @@ class UNetMobileNetV2unfixed(nn.Module):
             if i > 0:
                 x = self.upsample(x)
 
-        ## Classifier
-        x = self.classifier(x)
+        # Classifier
+        logits = self.classifier(x)
 
-        return x
+        return logits
 
 
    
@@ -180,7 +178,7 @@ class CustomUnet(nn.Module):
     def __init__(self, num_channels=3, num_classes=1):
         super(CustomUnet, self).__init__()
 
-        self.name = CustomUnet
+        self.name = 'CustomUnet'
 
         self.num_channels = num_channels
         self.num_classes = num_classes
@@ -217,11 +215,14 @@ class CustomUnet(nn.Module):
         Returns:
         - torch.Tensor: Output tensor of shape (batch_size, num_classes, height, width).
         """
+        # Encoder
         x1 = self.input_layer(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)
         x4 = self.down3(x3)
         x5 = self.down4(x4)
+
+        #Decoder
         x5 = self.upsample(x5)
         x = self.up1(torch.cat([x5, x4], dim=1))
         x = self.upsample(x)
@@ -230,6 +231,8 @@ class CustomUnet(nn.Module):
         x = self.up3(torch.cat([x, x2], dim=1))
         x = self.upsample(x)
         x = self.up4(torch.cat([x, x1], dim=1))
+
+        # Classifier
         logits = self.output_layer(x)
 
         return logits

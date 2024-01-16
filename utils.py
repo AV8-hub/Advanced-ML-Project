@@ -1,8 +1,4 @@
-import torch
 import torch.nn as nn
-import torchvision.models as models
-import numpy as np
-import pandas as pd
 
 def down(in_channels, out_channels):
     """

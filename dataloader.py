@@ -30,7 +30,7 @@ def filterDataset(folder, classes, annpath, mode):
     images = []
 
     # Get all images containing given categories
-    for className in classes:
+    for className in classes: ## For our project, we will always only use one class
         catIds = coco.getCatIds(catNms=className)
         imgIds = coco.getImgIds(catIds=catIds)
         images += coco.loadImgs(imgIds)
@@ -140,16 +140,14 @@ def getTensors(images, classes, coco, folder, mode, input_image_size):
     for i in range(dataset_size):
         imageObj = images[i]
 
-        ### Retrieve Image ###
+        # Get a clean input
         img = getImage(imageObj, img_folder, input_image_size)
         img = np.transpose(img, (2, 0, 1))
-        ##img = np.resize(img, (3, input_image_size[0], input_image_size[1]))
         X.append(img)
 
-        ### Create Mask ###
+        # Create the mask
         mask = getMask(imageObj, classes, coco, catIds, input_image_size)
         mask = np.transpose(mask, (2, 0, 1))
-        ##mask = np.resize(mask, (1, input_image_size[0], input_image_size[1]))
         y.append(mask)
 
     X = torch.Tensor(np.array(X))
@@ -178,17 +176,21 @@ def AugmentData(X, y, p=0.3):
         mask = y[i]
 
         for k in range(3):
+            # Horizontal flip
             if random.random() < p:
                 image = TF.hflip(image)
                 mask = TF.hflip(mask)
 
+            # Vertical flip
             if random.random() < p:
                 image = TF.vflip(image)
                 mask = TF.vflip(mask)
 
+            # Brightness change
             if random.random() < p:
                 image = v2.ColorJitter(brightness=random.random())(image)
 
+            # Noise addition
             if random.random() < p:
                 noise = torch.randn(image.size()) * 0.3 + 0.5
                 image = image + noise
