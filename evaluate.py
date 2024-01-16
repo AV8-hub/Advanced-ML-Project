@@ -77,7 +77,7 @@ def evaluate(model, validation_loader):
     print('LOSS valid {}'.format(avg_vloss))
     print('Average Accuracy valid {}'.format(avg_acc))
     print('Average IOU valid {}'.format(avg_iou))
-    results = {'Average Loss':[float(avg_vloss)], 'Average Accuracy':[avg_acc], 'Average IOU':[avg_iou], 'Running Time':[running_time]}
+    results = {'Average Loss':[float(avg_vloss)], 'Average Accuracy':[avg_acc], 'Average IOU':[avg_iou]}
     return results
 
 

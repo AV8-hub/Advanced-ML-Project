@@ -54,7 +54,7 @@ After training it, a model can be evaluated using the evaluate.py file. You shou
 ```bash
 python evaluate.py --model UNetMobileNetV2fixed --n-epochs 5 --augment False --object "train"
 ```
-This will create a .csv file containing the loss, the accuracy, the IoU score as well as the running time, stored in the "results" folder.
+This will create a .csv file containing the loss, the accuracy as well as the IoU score, stored in the "results" folder.
 
 ## How the code was created
 
