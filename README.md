@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 ### Getting the data
 
-You can get images from teh COCO dataset by using the get_data script. You can choose what class you want to import by specifying the argument --object. The default value is "train" but you can choose between all the 91 classes available.
+You can get images from the COCO dataset by using the get_data script. You can choose what class you want to import by specifying the argument --object. The default value is "train" but you can choose between all the 91 classes available.
 ```bash
 python get_data.py --object "train"
 ```
