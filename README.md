@@ -1,4 +1,4 @@
-# Sports Ball and Train Image Segmentation
+# Unveiling Semantic Segmentation Strategies for Objects of Different Sizes
 
 3A ENSAE 2023/2024 : Advanced ML Project
 
