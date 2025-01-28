@@ -1,4 +1,4 @@
-# Sports Ball Image Segmentation
+# Sports Ball and Train Image Segmentation
 
 3A ENSAE 2023/2024 : Advanced ML Project
 
