@@ -4,7 +4,7 @@
 
 BORDES Martin and ROSUNEE Avichaï
 
-This project focuses on leveraging neural network models for accurate image segmentation of sports balls and trains using the COCO dataset but can be adapted to of the 91 classes present in the dataset. We compare a simple U-Net to a U-Net using transfer learning and the pretrained model MobileNet-V2.
+This project focuses on leveraging neural network models for accurate image segmentation of sports balls and trains using the COCO dataset but can be adapted to one of the 91 classes present in the dataset. We compare a simple U-Net to a U-Net using transfer learning and the pretrained model MobileNet-V2.
 
 ### Installing the requirements
 
