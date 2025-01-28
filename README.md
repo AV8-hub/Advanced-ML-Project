@@ -28,7 +28,7 @@ Recreating our results is possible by doing all over again from the training wit
 
 ### Training your model
 
-In order to train a model, you can use the train.py file. This file will first put our data in a good format, in particular by constructing the mask, and then train a model on it. You should write the exact model you want to train by giving the name of the class after --model. You should also specify the number of epochs, whether to add the augmentation strategy or not and on which objet to train the model. The default values are specified here:
+In order to train a model, you can use the train.py file. This file will first put our data in a good format, in particular by constructing the mask, and then train a model on it. You should write the exact model you want to train by giving the name of the class after --model. You should also specify the number of epochs, whether to add the augmentation strategy or not and on which object to train the model. The default values are specified here:
 ```bash
 python train.py --model CustomUnet --n-epochs 15 --augment False --object "train"
 ```
